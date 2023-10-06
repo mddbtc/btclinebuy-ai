@@ -1,0 +1,35 @@
+//script created by mdd group with chatgp
+//our telegram https://t.me/+5jP3cCXJ489iYTM6
+//@version=5
+indicator(title="Средняя стоимость и зона покупки", overlay=true)
+
+// Вводим параметры для скользящей средней
+length = input.int(14, title="Период скользящей средней")
+src = input(close, title="Источник данных скользящей средней")
+buy_zone_percent = input.float(50, title="Процент зоны покупки (%)") / 100
+
+// Вычисляем скользящую среднюю
+sma = ta.sma(src, length)
+
+// Определяем зону покупки (по проценту от средней стоимости)
+buy_zone = sma * buy_zone_percent
+
+// Рисуем скользящую среднюю и зону покупки
+plot(buy_zone, color=color.green, title="Зона покупки")
+
+// Определение условий для отображения "buy" и установки зеленого фона
+buy_condition = ta.crossover(close, buy_zone) // Проверяем, что цена закрылась выше скользящей
+bgcolor(buy_condition ? color.green : na, transp = 90) // Устанавливаем зеленый фон, если условие выполнилось
+
+longer = math.round(buy_zone, 2)
+lot=color.new(color.green, 0)
+var label lb2 = na
+label.delete(lb2)
+lb2 := label.new(bar_index + 5, longer, str.tostring(longer), color=color.green, textcolor=color.white, style=label.style_label_left, size=size.normal)
+
+///////////////
+var label lb1 = na
+if (buy_condition)
+    lb1 := label.new(x=bar_index, y=low, text="Buy", color=color.green, textcolor=color.white, style=label.style_label_up, size=size.normal)
+
+
